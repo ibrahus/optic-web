@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Captioning</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            margin-top: 10px;
+            display: block;
+            color: #666;
+        }
+
+        input[type="file"],
+        input[type="text"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            box-sizing: border-box; /* Added for consistent sizing */
+        }
+
+        input[type="submit"] {
+            background: #5cb85c;
+            color: white;
+            border: 0;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background: #4cae4c;
+        }
+
+        #responseArea {
+            margin-top: 20px;
+            padding: 30px;
+        }
+
+        audio {
+            width: 100%; /* Make audio player full width */
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Visual Captioning</h1>
+    <form id="imageUploadForm">
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="file" accept="image/*" required>
+        
+        <label for="prompt">Prompt:</label>
+        <input type="text" id="prompt" name="prompt" placeholder="Enter a prompt for the image">
+        
+        <input type="submit" id="submit" value="Chat with Image">
+    </form>
+
+    <div id="responseArea">
+        <!-- The response from the server will be displayed here -->
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
