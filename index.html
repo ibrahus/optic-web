@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +15,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         h1 {
@@ -42,7 +43,8 @@
             margin-top: 5px;
             border-radius: 4px;
             border: 1px solid #ddd;
-            box-sizing: border-box; /* Added for consistent sizing */
+            box-sizing: border-box;
+            /* Added for consistent sizing */
         }
 
         input[type="submit"] {
@@ -58,25 +60,34 @@
         }
 
         #responseArea {
+            width: 70%;
             margin-top: 20px;
             padding: 30px;
         }
 
         audio {
-            width: 100%; /* Make audio player full width */
-            margin-top: 10px;
+            width: 100%;
         }
+        
     </style>
 </head>
+
 <body>
     <h1>Visual Captioning</h1>
     <form id="imageUploadForm">
+
+        <label for="endpoint">Choose Model:</label>
+        <select id="endpoint" name="endpoint">
+            <option value="llava">LLaVA</option>
+            <option value="gpt4">GPT-4</option>
+        </select>
+
         <label for="image">Image:</label>
         <input type="file" id="image" name="file" accept="image/*" required>
-        
+
         <label for="prompt">Prompt:</label>
         <input type="text" id="prompt" name="prompt" placeholder="Enter a prompt for the image">
-        
+
         <input type="submit" id="submit" value="Chat with Image">
     </form>
 
@@ -86,4 +97,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

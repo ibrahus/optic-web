@@ -1,55 +1,77 @@
 // Constants for the API endpoints
 const API_BASE_URL = 'https://optic-api.fly.dev';
-const CHAT_WITH_IMAGE_ENDPOINT = `${API_BASE_URL}/chat-with-image-test`;
+const LLaVA_ENDPOINT = `${API_BASE_URL}/chat-with-image-test`;
 const DOWNLOAD_ENDPOINT = `${API_BASE_URL}/download/`;
+const GPT4_ENDPOINT = `${API_BASE_URL}/chat-with-image-gpt4`;
 
 document.getElementById('imageUploadForm').addEventListener('submit', async function (event) {
     event.preventDefault();
     setLoading(true);
 
+    const endpointChoice = document.getElementById('endpoint').value;
+
     try {
-        const formData = createFormData();
-        const data = await postImage(formData);
-        const audioBlob = await fetchAudio(data.audio_url);
-        displayResponse(URL.createObjectURL(audioBlob), data.text, data.translated_text);
+        const response = await postImage(endpointChoice === 'gpt4');
+        displayResponse(response);
     } catch (error) {
-        console.error('There was an error!', error);
+        console.error('There was an error:', error.message);
     } finally {
         setLoading(false);
     }
 });
 
-function createFormData() {
+async function postImage(isGPT4) {
     const formData = new FormData();
-    formData.append('file', document.getElementById('image').files[0]);
-    formData.append('prompt', document.getElementById('prompt').value);
-    return formData;
-}
+    const fileInput = document.getElementById('image');
+    if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    }
 
-async function postImage(formData) {
-    const response = await fetch(CHAT_WITH_IMAGE_ENDPOINT, {
+    const endpoint = isGPT4 ? GPT4_ENDPOINT : LLaVA_ENDPOINT;
+    const url = new URL(endpoint);
+
+    const prompt = document.getElementById('prompt').value;
+    url.searchParams.append('prompt', prompt);
+
+    const response = await fetch(url, {
         method: 'POST',
         body: formData
     });
-    if (!response.ok) throw new Error('Server responded with an error!');
-    return response.json();
+
+    if (!response.ok) {
+        throw new Error(`Server responded with an error: ${response.statusText}`);
+    }
+
+    return isGPT4 ? response.blob() : response.json();
 }
 
-async function fetchAudio(audioPath) {
-    const response = await fetch(`${DOWNLOAD_ENDPOINT}${audioPath}`);
-    if (!response.ok) throw new Error('Audio download failed!');
-    return response.blob();
-}
-
-function displayResponse(audioUrl, text, translatedText) {
+function displayResponse(response) {
     const responseArea = document.getElementById('responseArea');
-    responseArea.innerHTML = `
-        <p><strong>Original Text:</strong> ${text}</p>
-        <p><strong>Translated Text:</strong> ${translatedText}</p>
+
+    if (response instanceof Blob) {
+        const audioUrl = URL.createObjectURL(response);
+        responseArea.innerHTML = generateAudioPlayerHTML(audioUrl);
+    } else {
+        responseArea.innerHTML = generateTextAndAudioHTML(response);
+    }
+}
+
+function generateAudioPlayerHTML(audioUrl) {
+    return `
+        <p><strong>Audio:</strong></p>
         <audio controls>
             <source src="${audioUrl}" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
+    `;
+}
+
+function generateTextAndAudioHTML(data) {
+    const audioUrl = `${DOWNLOAD_ENDPOINT}${data.audio_url}`;
+    return `
+        <p><strong>Original Text:</strong> ${data.text}</p>
+        <p><strong>Translated Text:</strong> ${data.translated_text}</p>
+        ${generateAudioPlayerHTML(audioUrl)}
     `;
 }
 
